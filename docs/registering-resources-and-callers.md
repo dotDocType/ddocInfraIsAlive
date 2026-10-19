@@ -110,5 +110,10 @@ public sealed class InfraIsAliveClient(HttpClient http, IConfiguration config)
 }
 ```
 
-The product decides what the user sees while it waits, and how long it is willing to wait. A few minutes is
-realistic for a stopped PostgreSQL server.
+The product decides what the user sees while it waits, and how long it is willing to wait. As a reference, in a
+validation run from fully stopped, a VM (2 vCPU) and a Container App were `Online` in under a minute, and a
+Burstable PostgreSQL Flexible Server in about three minutes.
+
+A single call can take up to about 30 seconds when a resource provider is slow to answer: each ARM request has a
+30-second timeout, and that resource then comes back as `Unknown` with a `Status read failed` message. Keep the
+caller's HTTP timeout above that (the `HttpClient` default of 100 seconds is fine).
