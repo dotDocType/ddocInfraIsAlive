@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: infraisalive
+metadata:
+  template: infraisalive@0.1.0
+infra:
+  provider: bicep
+  path: infra
+services:
+  api:
+    project: ./src/InfraIsAlive.Functions
+    language: dotnet
+    host: function
+hooks:
+  preprovision:
+    posix:
+      shell: sh
+      run: ./scripts/check-config.sh
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: ./scripts/check-config.ps1
+      continueOnError: false
+  predeploy:
+    posix:
+      shell: sh
+      run: ./scripts/check-config.sh
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: ./scripts/check-config.ps1
+      continueOnError: false
+  postprovision:
+    posix:
+      shell: sh
+      run: dotnet run --project ./tools/InfraIsAlive.RbacSync -- --subscription-id "$AZURE_SUBSCRIPTION_ID" --principal-id "$FUNCTION_PRINCIPAL_ID" --arm-endpoint "$ARM_ENDPOINT" --config-dir ./config
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: dotnet run --project ./tools/InfraIsAlive.RbacSync -- --subscription-id "$env:AZURE_SUBSCRIPTION_ID" --principal-id "$env:FUNCTION_PRINCIPAL_ID" --arm-endpoint "$env:ARM_ENDPOINT" --config-dir ./config
+      continueOnError: false
