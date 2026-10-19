@@ -92,7 +92,7 @@ For each name, in parallel and independently:
 | Stopped / deallocated | issue the start action | `Starting` | true |
 | Stopped, but the profile has no start action | none | `Stopped` | false |
 | Stopping (shutdown in progress) | none, cannot start yet | `Stopped` | false |
-| Start action rejected by Azure, or resource reported failed | — | `Failed` | true/false |
+| Start action rejected by Azure, or resource reported failed | — | `Failed` | false (`startTriggered` is true only when Azure accepted a start in this call) |
 | Name not registered, or raw value not in the profile's map | none | `Unknown` | false |
 
 Response: HTTP 200 with one entry per requested name:
