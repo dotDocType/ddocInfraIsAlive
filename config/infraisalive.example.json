@@ -1,0 +1,16 @@
+{
+  "AllowedCallerObjectIds": [
+    "<object-id-of-a-caller-managed-identity>"
+  ],
+  "ResourceTypes": {},
+  "Resources": {
+    "app-vm": {
+      "Type": "vm",
+      "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Compute/virtualMachines/<vm-name>"
+    },
+    "main-db": {
+      "Type": "postgres-flexible",
+      "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.DBforPostgreSQL/flexibleServers/<server-name>"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+bin/
+obj/
+.azure/
+.vs/
+.idea/
+*.user
+TestResults/
+local.settings.json
+config/infraisalive.json
