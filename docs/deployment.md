@@ -183,7 +183,7 @@ apiClientId=$(azd env get-value API_CLIENT_ID)
 azd down --purge
 
 role="InfraIsAlive Resource Waker ($(echo "$principal" | cut -c1-8))"
-az role assignment list --role "$role" --all --query "[].id" -o tsv | xargs -n1 az role assignment delete --ids
+az role assignment list --assignee "$principal" --all --query "[?roleDefinitionName=='$role'].id" -o tsv | xargs -n1 az role assignment delete --ids
 az role definition delete --name "$role"
 az ad app delete --id "$apiClientId"   # default path only
 ```
