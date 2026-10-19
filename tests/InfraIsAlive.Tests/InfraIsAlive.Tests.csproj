@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\InfraIsAlive.Core\InfraIsAlive.Core.csproj" />
     <ProjectReference Include="..\..\src\InfraIsAlive.Functions\InfraIsAlive.Functions.csproj" />
+    <ProjectReference Include="..\..\tools\InfraIsAlive.RbacSync\InfraIsAlive.RbacSync.csproj" />
   </ItemGroup>
 
 </Project>
