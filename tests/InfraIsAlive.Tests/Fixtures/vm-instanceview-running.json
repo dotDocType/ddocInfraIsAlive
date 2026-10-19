@@ -1,0 +1,45 @@
+{
+  "computerName": "vm-example",
+  "disks": [
+    {
+      "name": "vm-example_OsDisk_1_00000000000000000000000000000000",
+      "statuses": [
+        {
+          "code": "ProvisioningState/succeeded",
+          "displayStatus": "Provisioning succeeded",
+          "level": "Info",
+          "time": "2026-10-19T21:33:29.7210822+00:00"
+        }
+      ]
+    }
+  ],
+  "hyperVGeneration": "V2",
+  "osName": "ubuntu",
+  "osVersion": "24.04",
+  "statuses": [
+    {
+      "code": "ProvisioningState/succeeded",
+      "displayStatus": "Provisioning succeeded",
+      "level": "Info",
+      "time": "2026-10-19T21:33:43.9068585+00:00"
+    },
+    {
+      "code": "PowerState/running",
+      "displayStatus": "VM running",
+      "level": "Info"
+    }
+  ],
+  "vmAgent": {
+    "extensionHandlers": [],
+    "statuses": [
+      {
+        "code": "ProvisioningState/succeeded",
+        "displayStatus": "Ready",
+        "level": "Info",
+        "message": "Guest Agent is running",
+        "time": "2026-10-19T22:04:57+00:00"
+      }
+    ],
+    "vmAgentVersion": "203.0.113.10"
+  }
+}
