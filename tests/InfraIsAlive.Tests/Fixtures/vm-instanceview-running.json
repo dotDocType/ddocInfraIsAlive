@@ -1,0 +1,8 @@
+{
+  "computerName": "vm-example",
+  "osName": "ubuntu",
+  "statuses": [
+    { "code": "ProvisioningState/succeeded", "level": "Info", "displayStatus": "Provisioning succeeded", "time": "2026-10-19T10:00:00Z" },
+    { "code": "PowerState/running", "level": "Info", "displayStatus": "VM running" }
+  ]
+}

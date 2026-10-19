@@ -1,0 +1,7 @@
+{
+  "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.App/containerApps/app-example",
+  "name": "app-example",
+  "type": "Microsoft.App/containerApps",
+  "location": "eastus",
+  "properties": { "provisioningState": "Succeeded", "runningStatus": "Running", "latestRevisionName": "app-example--rev1" }
+}

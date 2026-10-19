@@ -1,0 +1,59 @@
+{
+  "ResourceTypes": {
+    "vm": {
+      "ApiVersion": "2024-07-01",
+      "StatusPath": "/instanceView",
+      "StatusField": "$.statuses[?(@.code =~ /^PowerState\\/.*$/)].code",
+      "StartAction": "start",
+      "StateMap": {
+        "PowerState/running": "Online",
+        "PowerState/starting": "Starting",
+        "PowerState/stopped": "Stopped",
+        "PowerState/deallocated": "Stopped",
+        "PowerState/stopping": "Stopping",
+        "PowerState/deallocating": "Stopping"
+      },
+      "RequiredActions": [
+        "Microsoft.Compute/virtualMachines/read",
+        "Microsoft.Compute/virtualMachines/instanceView/read",
+        "Microsoft.Compute/virtualMachines/start/action"
+      ]
+    },
+    "postgres-flexible": {
+      "ApiVersion": "2024-08-01",
+      "StatusPath": "",
+      "StatusField": "$.properties.state",
+      "StartAction": "start",
+      "StateMap": {
+        "Ready": "Online",
+        "Starting": "Starting",
+        "Restarting": "Starting",
+        "Updating": "Starting",
+        "Stopped": "Stopped",
+        "Stopping": "Stopping",
+        "Disabled": "Failed",
+        "Inaccessible": "Failed"
+      },
+      "RequiredActions": [
+        "Microsoft.DBforPostgreSQL/flexibleServers/read",
+        "Microsoft.DBforPostgreSQL/flexibleServers/start/action"
+      ]
+    },
+    "container-app": {
+      "ApiVersion": "2024-03-01",
+      "StatusPath": "",
+      "StatusField": "$.properties.runningStatus",
+      "StartAction": "start",
+      "StateMap": {
+        "Running": "Online",
+        "Progressing": "Starting",
+        "Stopped": "Stopped",
+        "Degraded": "Failed"
+      },
+      "RequiredActions": [
+        "Microsoft.App/containerApps/read",
+        "Microsoft.App/containerApps/start/action"
+      ]
+    }
+  }
+}

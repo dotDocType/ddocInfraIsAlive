@@ -1,0 +1,8 @@
+{
+  "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.DBforPostgreSQL/flexibleServers/pg-example",
+  "name": "pg-example",
+  "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+  "location": "eastus",
+  "sku": { "name": "Standard_B1ms", "tier": "Burstable" },
+  "properties": { "state": "Ready", "version": "16", "fullyQualifiedDomainName": "pg-example.postgres.database.azure.com" }
+}
