@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "InfraIsAlive__ArmEndpoint": "<arm-endpoint, e.g. the value of az cloud show --query endpoints.resourceManager>",
+    "InfraIsAlive__ManagedIdentityClientId": "<client-id-of-the-user-assigned-managed-identity>"
+  }
+}
