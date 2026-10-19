@@ -145,6 +145,22 @@ public sealed class RbacSyncTests
     }
 
     [Fact]
+    public async Task Run_NoRegisteredResources_SkipsRolePutButStillRemovesStale()
+    {
+        var desired = RbacPlan.Build(Config(), Sub, Principal);
+        var ownRole = $"/subscriptions/{Sub}/providers/Microsoft.Authorization/roleDefinitions/{desired.RoleDefinitionId}";
+        var staleId = $"{VmId}/providers/Microsoft.Authorization/roleAssignments/stale";
+        var arm = new FakeArmClient()
+            .On(HttpMethod.Get, ListPath, List((staleId, ownRole, VmId)))
+            .On(HttpMethod.Delete, staleId + Api, new ArmResponse(200, "{}"));
+
+        await Runner(arm).RunAsync(desired, Sub, Principal, CancellationToken.None);
+
+        Assert.Equal(0, arm.Count(HttpMethod.Put));
+        Assert.Equal(staleId + Api, Assert.Single(arm.Calls, c => c.Method == HttpMethod.Delete).Path);
+    }
+
+    [Fact]
     public async Task Run_AssignmentExists_TreatedAsSuccess()
     {
         var desired = Desired(VmId);

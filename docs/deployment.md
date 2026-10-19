@@ -156,6 +156,9 @@ curl -s -X POST "$(azd env get-value FUNCTION_URL)/api/ensure" \
 azd provision && azd deploy
 ```
 
+If you are the **only** entry, removing yourself leaves the list empty and the guard blocks `azd provision`. Keep
+yourself on the list until the first product's identity is added, then remove yourself in the same edit.
+
 Each name should come back with a `state`. Anything stopped comes back as `Starting` with `"startTriggered": true`.
 If the call fails, see [troubleshooting.md](troubleshooting.md).
 

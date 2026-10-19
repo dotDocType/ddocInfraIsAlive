@@ -14,6 +14,13 @@ if tr -d ' \t\r\n' < "$config" | grep -q '"AllowedCallerObjectIds":\[\]'; then
   exit 1
 fi
 
+# Easy Auth caps allowedPrincipals.identities at 500 characters in total (about 13 object IDs).
+ids=$(tr -d ' \t\r\n"' < "$config" | sed -n 's/.*AllowedCallerObjectIds:\[\([^]]*\)\].*/\1/p')
+if [ "${#ids}" -gt 500 ]; then
+  echo "config/infraisalive.json: AllowedCallerObjectIds totals ${#ids} characters; Easy Auth allows at most 500 (about 13 object IDs)." >&2
+  exit 1
+fi
+
 if grep -q '<object-id\|<subscription-id>\|<resource-group>' "$config"; then
   echo "config/infraisalive.json still contains placeholders from the example file. Replace them with real values." >&2
   exit 1

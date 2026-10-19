@@ -49,6 +49,10 @@ managed identity.
 The allowlist is enforced twice: Easy Auth rejects tokens from principals that aren't listed, and the Function
 itself denies any principal that isn't listed. **An empty list denies everyone.**
 
+**Limit:** Easy Auth accepts at most **500 characters in total** across the list, which is about **13 object
+IDs**. The config guard stops `azd up` if you go over. If you have more callers, give them a shared user-assigned
+managed identity.
+
 ## Calling from a product (C#)
 
 The caller needs two values from the deployment, kept in its own configuration:
@@ -87,7 +91,10 @@ public sealed class InfraIsAliveClient(HttpClient http, IConfiguration config)
         return (await response.Content.ReadFromJsonAsync<EnsureResponse>(ct))!;
     }
 
-    /// <summary>Polls until every resource is Online, or gives up at the caller's own deadline.</summary>
+    /// <summary>
+    /// Polls until every resource is Online, or gives up at the caller's own deadline. Unknown and Failed are
+    /// often transient (a network blip, a throttled read), so keep polling; only an unregistered name is final.
+    /// </summary>
     public async Task<bool> WaitUntilOnlineAsync(string[] names, TimeSpan timeout, CancellationToken ct)
     {
         var deadline = DateTimeOffset.UtcNow + timeout;
@@ -95,10 +102,10 @@ public sealed class InfraIsAliveClient(HttpClient http, IConfiguration config)
         {
             var result = await EnsureAsync(names, ct);
             if (result.Results.All(r => r.State == "Online")) return true;
-            if (result.Results.Any(r => r.State is "Failed" or "Unknown")) return false; // inspect Message
+            if (result.Results.Any(r => r.Message?.EndsWith("is not registered.") == true)) return false; // config error
             await Task.Delay(TimeSpan.FromSeconds(5), ct);
         }
-        return false;
+        return false; // log the last results' Message for whoever investigates
     }
 }
 ```

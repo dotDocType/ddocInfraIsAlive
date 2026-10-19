@@ -103,6 +103,17 @@ public sealed class ConfigLoaderTests : IDisposable
     }
 
     [Fact]
+    public void Load_MalformedStatusField_ListsError()
+    {
+        var builtin = Write("builtin.json", $$"""{ "ResourceTypes": { "bad": {{Profile(statusField: "$.properties[?(@.x ==")}} } }""");
+        var adopter = Write("adopter.json", """{ "Resources": {} }""");
+
+        var ex = Assert.Throws<InfraConfigException>(() => ConfigLoader.Load(builtin, adopter));
+
+        Assert.Contains(ex.Errors, e => e.Contains("'bad'") && e.Contains("StatusField"));
+    }
+
+    [Fact]
     public void Load_MissingAdopterFile_ThrowsWithPath()
     {
         var builtin = Write("builtin.json", """{ "ResourceTypes": {} }""");

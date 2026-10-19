@@ -60,6 +60,10 @@ Callers need **no Azure RBAC role at all**. They need:
 1. A managed identity (or another Entra principal) whose **object ID** is in `AllowedCallerObjectIds`.
 2. A token for the audience `API_AUDIENCE` (the app registration's client ID), requested as `<client-id>/.default`.
 
+> **Never disable Authentication (Easy Auth) on the Function app.** The in-code allowlist trusts the
+> `X-MS-CLIENT-PRINCIPAL-ID` header that Easy Auth sets and strips from incoming requests. Without Easy Auth,
+> anyone who knows the URL can forge that header and start your resources.
+
 Managed identities get app-only tokens without consent. For a user to get a token (as in the deployment
 verification step), the registration must expose the `user_impersonation` scope with the Azure CLI pre-authorized.
 The default path sets this up.

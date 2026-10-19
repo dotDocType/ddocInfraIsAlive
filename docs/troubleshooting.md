@@ -19,14 +19,16 @@
 | `Status read failed: <exception>` | A network or timeout problem reaching ARM. | Usually transient; the next poll retries. |
 | `Raw state '<value>' is not mapped by profile '<type>'.` | Azure returned a state the profile doesn't know. | Add the value to the profile's `StateMap`, or override the profile (see [adding-a-resource-type.md](adding-a-resource-type.md)). If `<value>` is `<none>`, `StatusField` matched nothing. |
 | `Resource is stopping; it will be started by a later call once fully stopped.` | Shutdown was still in progress (reported as `Stopped`). | Nothing to fix. Keep polling and it will be started. |
-| `Start already in progress.` | Another caller already started it (reported as `Starting`). | Nothing to fix. |
+| `Start already in progress.` / `Start already in progress: <ARM body>` | Azure answered the start with 409, reported as `Starting`. Usually another caller already started it. The ARM body, when present, can instead show a different operation in progress (an update or scaling). | Usually nothing to fix. If it stays `Starting` with `rawState` still stopped, read the body: the other operation must finish first. |
+| `Resource reports state '<value>'.` | The profile maps this raw state to `Failed` (for example PostgreSQL `Disabled`). | Check the resource in the portal; InfraIsAlive can't start it from this state. |
 | `Start rejected: ARM returned <code>: ...` | Azure refused the start. Regional capacity shortages are a known cause for PostgreSQL Flexible Server, and quota limits are another. | Read the body; retry later or contact Azure support for capacity. |
 | `Start failed: <exception>` | A network problem while sending the start. | Usually transient. |
 
 ## Deployment problems
 
-- **"config/infraisalive.json not found / is empty / contains placeholders"**: the preprovision guard stopped
-  you. Follow the message.
+- **"config/infraisalive.json not found / is empty / contains placeholders / totals N characters"**: the
+  preprovision guard stopped you. Follow the message. The last one is Easy Auth's 500-character limit on the
+  allowlist (about 13 object IDs).
 - **Graph or app-registration errors during `azd provision`**: your account can't create app registrations, or
   it is a personal Microsoft account. Use the pre-created path in [deployment.md](deployment.md#3-optional-use-a-pre-created-app-registration).
 - **`Waiting for Entra/ARM replication...` lines from RbacSync**: normal on the first run, while the new identity

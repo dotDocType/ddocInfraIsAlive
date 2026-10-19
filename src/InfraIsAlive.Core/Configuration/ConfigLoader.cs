@@ -58,6 +58,7 @@ public static partial class ConfigLoader
         var before = errors.Count;
         if (string.IsNullOrWhiteSpace(dto.ApiVersion)) errors.Add($"ResourceType '{key}': ApiVersion is required.");
         if (string.IsNullOrWhiteSpace(dto.StatusField)) errors.Add($"ResourceType '{key}': StatusField is required.");
+        else if (JsonPathError(dto.StatusField) is { } pathError) errors.Add($"ResourceType '{key}': StatusField '{dto.StatusField}' is not a valid JSONPath: {pathError}");
         if (dto.StateMap is null || dto.StateMap.Count == 0) errors.Add($"ResourceType '{key}': StateMap must not be empty.");
 
         var stateMap = new Dictionary<string, MappedState>(StringComparer.OrdinalIgnoreCase);
@@ -78,6 +79,20 @@ public static partial class ConfigLoader
             string.IsNullOrWhiteSpace(dto.StartAction) ? null : dto.StartAction,
             stateMap,
             dto.RequiredActions ?? []);
+    }
+
+    // Newtonsoft parses the path eagerly, so selecting against an empty object surfaces syntax errors at load time.
+    private static string? JsonPathError(string path)
+    {
+        try
+        {
+            _ = new Newtonsoft.Json.Linq.JObject().SelectTokens(path).ToList();
+            return null;
+        }
+        catch (Exception ex) // Newtonsoft throws JsonException, ArgumentException or IndexOutOfRangeException on bad paths
+        {
+            return ex.Message;
+        }
     }
 
     private static FileDto Read(string path)

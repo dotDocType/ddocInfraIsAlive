@@ -16,6 +16,13 @@ if (-not $json.AllowedCallerObjectIds -or $json.AllowedCallerObjectIds.Count -eq
     exit 1
 }
 
+# Easy Auth caps allowedPrincipals.identities at 500 characters in total (about 13 object IDs).
+$joined = ($json.AllowedCallerObjectIds -join ',')
+if ($joined.Length -gt 500) {
+    Write-Error "config/infraisalive.json: AllowedCallerObjectIds totals $($joined.Length) characters; Easy Auth allows at most 500 (about 13 object IDs)."
+    exit 1
+}
+
 if ($raw -match '<object-id|<subscription-id>|<resource-group>') {
     Write-Error 'config/infraisalive.json still contains placeholders from the example file. Replace them with real values.'
     exit 1

@@ -1,6 +1,11 @@
+using System.Text;
 using System.Text.Json;
+using InfraIsAlive.Core.Configuration;
 using InfraIsAlive.Core.Ensure;
 using InfraIsAlive.Functions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace InfraIsAlive.Tests;
 
@@ -62,5 +67,59 @@ public sealed class FunctionTests
         Assert.Contains("\"rawState\":\"Ready\"", json);
         Assert.Contains("\"checkedAt\":\"2026-10-19T23:30:01+00:00\"", json);
         Assert.DoesNotContain("message", json);
+    }
+
+    private static EnsureFunction Function(FakeArmClient arm)
+    {
+        var config = new InfraConfig([Caller], new Dictionary<string, ResourceTypeProfile>(), new Dictionary<string, RegisteredResource>());
+        return new EnsureFunction(new EnsureService(config, arm, TimeProvider.System), config, NullLogger<EnsureFunction>.Instance);
+    }
+
+    private static HttpRequest Request(string? principal, string body)
+    {
+        var context = new DefaultHttpContext();
+        if (principal is not null) context.Request.Headers[EnsureFunction.PrincipalIdHeader] = principal;
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
+        return context.Request;
+    }
+
+    [Fact]
+    public async Task Run_NoPrincipal_Returns401()
+    {
+        var arm = new FakeArmClient();
+
+        var result = await Function(arm).Run(Request(null, """{"names":["x"]}"""), CancellationToken.None);
+
+        Assert.IsType<UnauthorizedResult>(result);
+        Assert.Empty(arm.Calls);
+    }
+
+    [Fact]
+    public async Task Run_UnlistedPrincipal_Returns403EvenWithBadBody()
+    {
+        var arm = new FakeArmClient();
+
+        var result = await Function(arm).Run(Request("22222222-2222-2222-2222-222222222222", "not json"), CancellationToken.None);
+
+        Assert.Equal(403, Assert.IsType<StatusCodeResult>(result).StatusCode);
+        Assert.Empty(arm.Calls);
+    }
+
+    [Fact]
+    public async Task Run_AllowedPrincipalBadBody_Returns400()
+    {
+        var result = await Function(new FakeArmClient()).Run(Request(Caller, "{}"), CancellationToken.None);
+
+        Assert.Equal(400, Assert.IsType<JsonResult>(result).StatusCode);
+    }
+
+    [Fact]
+    public async Task Run_AllowedPrincipal_Returns200WithResults()
+    {
+        var result = await Function(new FakeArmClient()).Run(Request(Caller, """{"names":["w"]}"""), CancellationToken.None);
+
+        var json = Assert.IsType<JsonResult>(result);
+        Assert.Null(json.StatusCode);
+        Assert.Equal(ResourceState.Unknown, Assert.Single(Assert.IsType<EnsureResponse>(json.Value).Results).State);
     }
 }

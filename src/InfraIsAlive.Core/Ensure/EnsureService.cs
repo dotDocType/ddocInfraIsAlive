@@ -52,7 +52,7 @@ public sealed class EnsureService(InfraConfig config, IArmClient arm, TimeProvid
             case MappedState.Starting:
                 return Result(ResourceState.Starting, false, raw, null);
             case MappedState.Failed:
-                return Result(ResourceState.Failed, false, raw, null);
+                return Result(ResourceState.Failed, false, raw, $"Resource reports state '{raw}'.");
             case MappedState.Stopping:
                 return Result(ResourceState.Stopped, false, raw, "Resource is stopping; it will be started by a later call once fully stopped.");
             case MappedState.Stopped when profile.StartAction is null:
@@ -75,9 +75,14 @@ public sealed class EnsureService(InfraConfig config, IArmClient arm, TimeProvid
         {
             var start = await arm.SendAsync(HttpMethod.Post, $"{resource.ResourceId}/{profile.StartAction}?api-version={profile.ApiVersion}", null, ct);
             if (start.IsSuccess) return result(ResourceState.Starting, true, raw, null);
-            if (start.StatusCode == 409) return result(ResourceState.Starting, false, raw, "Start already in progress.");
 
             var body = start.Body.Length > MaxBodyInMessage ? start.Body[..MaxBodyInMessage] : start.Body;
+
+            // A 409 is usually another caller's start racing this one; keep ARM's reason for the cases where
+            // it is a different operation in progress, so operators can tell them apart.
+            if (start.StatusCode == 409)
+                return result(ResourceState.Starting, false, raw, string.IsNullOrWhiteSpace(body) ? "Start already in progress." : $"Start already in progress: {body}");
+
             return result(ResourceState.Failed, false, raw, $"Start rejected: ARM returned {start.StatusCode}: {body}");
         }
         catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)

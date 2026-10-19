@@ -30,8 +30,13 @@ public sealed class RbacSyncRunner(IArmClient arm, Func<TimeSpan, CancellationTo
                 assignableScopes = new[] { subscriptionScope },
             },
         });
-        Ensure(await arm.SendAsync(HttpMethod.Put, $"{roleDefinitionId}?{Api}", roleBody, ct), $"create/update role '{desired.RoleName}'");
-        Console.WriteLine($"Role '{desired.RoleName}' ({desired.RoleDefinitionId}): {desired.Actions.Count} actions.");
+        // With nothing registered there is nothing to grant; skip the role update (ARM may reject an empty
+        // actions list) but still remove assignments left over from resources that were unregistered.
+        if (desired.Actions.Count > 0)
+        {
+            Ensure(await arm.SendAsync(HttpMethod.Put, $"{roleDefinitionId}?{Api}", roleBody, ct), $"create/update role '{desired.RoleName}'");
+            Console.WriteLine($"Role '{desired.RoleName}' ({desired.RoleDefinitionId}): {desired.Actions.Count} actions.");
+        }
 
         await Task.WhenAll(desired.Scopes.Select(scope => AssignAsync(scope, roleDefinitionId, principalId, ct)));
 

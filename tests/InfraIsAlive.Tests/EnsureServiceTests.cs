@@ -102,11 +102,22 @@ public sealed class EnsureServiceTests
     [Fact]
     public async Task Ensure_StartConflict_ReportsStarting()
     {
-        _arm.On(HttpMethod.Get, PgRead, Pg("Stopped")).On(HttpMethod.Post, PgStart, new ArmResponse(409, "{}"));
+        _arm.On(HttpMethod.Get, PgRead, Pg("Stopped")).On(HttpMethod.Post, PgStart, new ArmResponse(409, ""));
 
         var r = await One("z");
 
         Assert.Equal((ResourceState.Starting, false, "Start already in progress."), (r.State, r.StartTriggered, r.Message));
+    }
+
+    [Fact]
+    public async Task Ensure_StartConflictWithBody_KeepsArmReasonInMessage()
+    {
+        _arm.On(HttpMethod.Get, PgRead, Pg("Stopped")).On(HttpMethod.Post, PgStart, new ArmResponse(409, "AnotherOperationInProgress"));
+
+        var r = await One("z");
+
+        Assert.Equal((ResourceState.Starting, false), (r.State, r.StartTriggered));
+        Assert.Equal("Start already in progress: AnotherOperationInProgress", r.Message);
     }
 
     [Fact]
@@ -139,6 +150,7 @@ public sealed class EnsureServiceTests
         var r = await One("z");
 
         Assert.Equal((ResourceState.Failed, false, "Disabled"), (r.State, r.StartTriggered, r.RawState));
+        Assert.Equal("Resource reports state 'Disabled'.", r.Message);
         Assert.Equal(0, _arm.Count(HttpMethod.Post));
     }
 
