@@ -1,8 +1,29 @@
 {
-  "computerName": "vm-example",
-  "osName": "ubuntu",
+  "disks": [
+    {
+      "name": "vm-example_OsDisk_1_00000000000000000000000000000000",
+      "statuses": [
+        {
+          "code": "ProvisioningState/succeeded",
+          "displayStatus": "Provisioning succeeded",
+          "level": "Info",
+          "time": "2026-10-19T22:06:05.0361513+00:00"
+        }
+      ]
+    }
+  ],
+  "hyperVGeneration": "V2",
   "statuses": [
-    { "code": "ProvisioningState/succeeded", "level": "Info", "displayStatus": "Provisioning succeeded", "time": "2026-10-19T10:00:00Z" },
-    { "code": "PowerState/deallocated", "level": "Info", "displayStatus": "VM deallocated" }
+    {
+      "code": "ProvisioningState/succeeded",
+      "displayStatus": "Provisioning succeeded",
+      "level": "Info",
+      "time": "2026-10-19T22:06:05.0670965+00:00"
+    },
+    {
+      "code": "PowerState/deallocated",
+      "displayStatus": "VM deallocated",
+      "level": "Info"
+    }
   ]
 }

@@ -1,0 +1,28 @@
+{
+  "disks": [
+    {
+      "name": "vm-example_OsDisk_1_00000000000000000000000000000000",
+      "statuses": [
+        {
+          "code": "ProvisioningState/succeeded",
+          "displayStatus": "Provisioning succeeded",
+          "level": "Info",
+          "time": "2026-10-19T21:33:29.7210822+00:00"
+        }
+      ]
+    }
+  ],
+  "hyperVGeneration": "V2",
+  "statuses": [
+    {
+      "code": "ProvisioningState/updating",
+      "displayStatus": "Updating",
+      "level": "Info"
+    },
+    {
+      "code": "PowerState/deallocating",
+      "displayStatus": "VM deallocating",
+      "level": "Info"
+    }
+  ]
+}

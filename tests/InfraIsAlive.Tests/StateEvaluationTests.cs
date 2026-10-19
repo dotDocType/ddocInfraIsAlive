@@ -26,8 +26,12 @@ public sealed class StateEvaluationTests
     [Theory]
     [InlineData("vm-instanceview-running.json", "vm", "PowerState/running", MappedState.Online)]
     [InlineData("vm-instanceview-deallocated.json", "vm", "PowerState/deallocated", MappedState.Stopped)]
+    [InlineData("vm-instanceview-deallocating.json", "vm", "PowerState/deallocating", MappedState.Stopping)]
+    [InlineData("vm-instanceview-starting.json", "vm", "PowerState/starting", MappedState.Starting)]
     [InlineData("postgres-ready.json", "postgres-flexible", "Ready", MappedState.Online)]
     [InlineData("postgres-stopped.json", "postgres-flexible", "Stopped", MappedState.Stopped)]
+    [InlineData("postgres-stopping.json", "postgres-flexible", "Stopping", MappedState.Stopping)]
+    [InlineData("postgres-starting.json", "postgres-flexible", "Starting", MappedState.Starting)]
     [InlineData("containerapp-running.json", "container-app", "Running", MappedState.Online)]
     [InlineData("containerapp-stopped.json", "container-app", "Stopped", MappedState.Stopped)]
     public void BuiltinProfile_ExtractsAndMaps(string fixture, string type, string expectedRaw, MappedState expected)

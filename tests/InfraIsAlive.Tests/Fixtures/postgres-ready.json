@@ -1,8 +1,57 @@
 {
   "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-example/providers/Microsoft.DBforPostgreSQL/flexibleServers/pg-example",
+  "location": "Central US",
   "name": "pg-example",
-  "type": "Microsoft.DBforPostgreSQL/flexibleServers",
-  "location": "eastus",
-  "sku": { "name": "Standard_B1ms", "tier": "Burstable" },
-  "properties": { "state": "Ready", "version": "16", "fullyQualifiedDomainName": "pg-example.postgres.database.azure.com" }
+  "properties": {
+    "administratorLogin": "example",
+    "authConfig": {
+      "activeDirectoryAuth": "Disabled",
+      "passwordAuth": "Enabled"
+    },
+    "availabilityZone": "2",
+    "backup": {
+      "backupRetentionDays": 7,
+      "earliestRestoreDate": "2026-10-19T21:45:21.5235862+00:00",
+      "geoRedundantBackup": "Disabled"
+    },
+    "dataEncryption": {
+      "type": "SystemManaged"
+    },
+    "fullyQualifiedDomainName": "pg-example.postgres.database.azure.com",
+    "highAvailability": {
+      "mode": "Disabled",
+      "state": "NotEnabled"
+    },
+    "maintenanceWindow": {
+      "customWindow": "Disabled",
+      "dayOfWeek": 0,
+      "startHour": 0,
+      "startMinute": 0
+    },
+    "minorVersion": "15",
+    "network": {
+      "publicNetworkAccess": "Disabled"
+    },
+    "privateEndpointConnections": [],
+    "replica": {
+      "capacity": 5,
+      "role": "Primary"
+    },
+    "replicaCapacity": 5,
+    "replicationRole": "Primary",
+    "state": "Ready",
+    "storage": {
+      "autoGrow": "Disabled",
+      "iops": 120,
+      "storageSizeGB": 32,
+      "tier": "P4",
+      "type": "Premium_LRS"
+    },
+    "version": "16"
+  },
+  "sku": {
+    "name": "Standard_B1ms",
+    "tier": "Burstable"
+  },
+  "type": "Microsoft.DBforPostgreSQL/flexibleServers"
 }
